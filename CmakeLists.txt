@@ -24,6 +24,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Client/src/config.h.in ${CMAKE_CURREN
 add_executable(${GAME}
 	Client/src/main.cpp
 	Client/src/local/GraphWarEdu.cpp
+	Model/Entity.cpp
+	Model/Player.cpp
+	Model/Map.cpp
+	Model/Scenario.cpp
+	Model/Game.cpp
 	Client/src/local/scenes/GameScene.cpp
 	Client/src/local/scenes/MenuScene.cpp
 	Client/src/local/scenes/RulesScene.cpp

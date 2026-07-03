@@ -1,6 +1,8 @@
 #ifndef _GameScene_
 #define _GameScene_
 
+#include "../../../../Model/Game.h"
+
 namespace gw{
 	struct GraphWarEdu;
 
@@ -15,7 +17,9 @@ namespace gw{
 			void doShow() override;
 
 		private:
-			GraphWarEdu& m_game;
+			GraphWarEdu& m_gameManager;
+
+			Game* m_game;
 
 			gf::Action m_trigerAction;
 

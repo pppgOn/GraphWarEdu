@@ -6,7 +6,7 @@ namespace gw{
 	GameScene::GameScene(GraphWarEdu& game):
 		gf::Scene(game.getRenderer().getSize()),
 		m_backgroundTexture(game.resources.getTexture("background.jpg")),
-		m_game(game),
+		m_gameManager(game),
 		m_trigerAction("trigerAction"),
 		m_home("Go home", game.resources.getFont("RustyHooksRegular.ttf"))
 	{
