@@ -29,6 +29,7 @@ add_executable(${GAME}
 	Model/Map.cpp
 	Model/Scenario.cpp
 	Model/Game.cpp
+	Client/src/local/Buttons.cpp
 	Client/src/local/scenes/GameScene.cpp
 	Client/src/local/scenes/MenuScene.cpp
 	Client/src/local/scenes/RulesScene.cpp

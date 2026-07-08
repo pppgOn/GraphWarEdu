@@ -15,6 +15,10 @@ namespace gw{
 		m_trigerAction.addGamepadButtonControl(gf::AnyGamepad, gf::GamepadButton::A);
 		m_trigerAction.addMouseButtonControl(gf::MouseButton::Left);
 		addAction(m_trigerAction);
+
+		setupButton(m_home, m_widgets, [&] () {
+			m_gameManager.replaceAllScenes(m_gameManager.m_menu);
+		});
 	}
 
 
@@ -67,6 +71,10 @@ namespace gw{
 		m_home.setPosition(coords.getRelativePoint({0.38f, 0.95f}));
 		m_home.setParagraphWidth(paragraphWidth);
 		m_home.setPadding(paddingSize);
+
+		m_widgets.render(target, states);
+
+		target.setView(getHudView());
 	}
 
 	void GameScene::doShow() {

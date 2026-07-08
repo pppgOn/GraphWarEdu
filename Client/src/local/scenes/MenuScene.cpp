@@ -5,7 +5,7 @@
 namespace gw{
 	MenuScene::MenuScene(GraphWarEdu& game) :
 		gf::Scene(game.getRenderer().getSize()),
-		m_game(game),
+		m_gameManager(game),
 		m_backgroundTexture(game.resources.getTexture("background.jpg")),
 		m_upAction("UpAction"),
 		m_downAction("DownAction"),
@@ -19,29 +19,16 @@ namespace gw{
 
 		SetupActions();
 
-		auto setupButton = [&] (gf::TextButtonWidget& button, auto callback) {
-			button.setDefaultTextColor(gf::Color::Black);
-			button.setDefaultBackgroundColor(gf::Color::Gray(0.7f));
-			button.setSelectedTextColor(gf::Color::Black);
-			button.setSelectedBackgroundColor(gf::Color::Blue);
-			button.setDisabledTextColor(gf::Color::Black);
-			button.setDisabledBackgroundColor(gf::Color::Red);
-			button.setAnchor(gf::Anchor::TopLeft);
-			button.setAlignment(gf::Alignment::Center);
-			button.setCallback(callback);
-			m_widgets.addWidget(button);
-		};
-
-		setupButton(m_newGame, [&] () {
-			m_game.replaceAllScenes(m_game.m_game);
+		setupButton(m_newGame, m_widgets, [&] () {
+			m_gameManager.replaceAllScenes(m_gameManager.m_game);
 		});
 
-		setupButton(m_rules, [&] () {
-			m_game.replaceAllScenes(m_game.m_rules);
+		setupButton(m_rules, m_widgets, [&] () {
+			m_gameManager.replaceAllScenes(m_gameManager.m_rules);
 		});
 
-		setupButton(m_quit, [&] () {
-			m_game.popAllScenes();
+		setupButton(m_quit, m_widgets, [&] () {
+			m_gameManager.popAllScenes();
 		});
 	}
 
@@ -84,7 +71,7 @@ namespace gw{
 		}
 
 		if (m_quitAction.isActive()) {
-			m_game.popAllScenes();
+			m_gameManager.popAllScenes();
 		}
 	}
 
@@ -92,7 +79,7 @@ namespace gw{
 		switch (event.type)
 		{
 		case gf::EventType::MouseMoved:
-			m_widgets.pointTo(m_game.computeWindowToGameCoordinates(event.mouseCursor.coords, getHudView()));
+			m_widgets.pointTo(m_gameManager.computeWindowToGameCoordinates(event.mouseCursor.coords, getHudView()));
 			break;
 		default :
 			break;
@@ -119,7 +106,7 @@ namespace gw{
 
 		unsigned titleCharacterSize = coords.getRelativeCharacterSize(0.1f);
 
-		gf::Text title("Graph War Edu", m_game.resources.getFont("RustyHooksRegular.ttf"), titleCharacterSize);
+		gf::Text title("Graph War Edu", m_gameManager.resources.getFont("RustyHooksRegular.ttf"), titleCharacterSize);
 		title.setColor(gf::Color::White);
 		title.setPosition(coords.getRelativePoint({ 0.5f, 0.1f }));
 		title.setAnchor(gf::Anchor::TopCenter);

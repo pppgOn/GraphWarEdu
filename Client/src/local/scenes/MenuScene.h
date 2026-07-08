@@ -10,7 +10,7 @@
 #include <gf/Action.h>
 #include <gf/Coordinates.h>
 #include <gf/Sprite.h>
-
+#include "../Buttons.h"
 
 namespace gw{
 	struct GraphWarEdu;
@@ -29,7 +29,7 @@ namespace gw{
 		private:
 			void SetupActions();
 
-			GraphWarEdu& m_game;
+			GraphWarEdu& m_gameManager;
 
 			gf::Action m_quitAction;
 			gf::Action m_upAction;

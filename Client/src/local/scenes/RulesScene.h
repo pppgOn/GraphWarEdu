@@ -5,6 +5,7 @@
 #include <gf/ResourceManager.h>
 #include <gf/Scene.h>
 #include <gf/Rect.h>
+#include "../Buttons.h"
 
 namespace gw{
 	struct GraphWarEdu;
@@ -19,7 +20,7 @@ namespace gw{
 			void doShow() override;
 
 		private:
-			GraphWarEdu& m_game;
+			GraphWarEdu& m_gameManager;
 
 			gf::Texture& m_backgroundTexture;
 			gf::TextButtonWidget m_home;

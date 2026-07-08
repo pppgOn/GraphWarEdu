@@ -2,6 +2,7 @@
 #define _GameScene_
 
 #include "../../../../Model/Game.h"
+#include "../Buttons.h"
 
 namespace gw{
 	struct GraphWarEdu;

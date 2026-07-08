@@ -10,7 +10,7 @@ namespace gw{
 		m_upAction("UpAction"),
 		m_downAction("DownAction"),
 		m_triggerAction("TriggerAction"),
-		m_game(game)
+		m_gameManager(game)
 	{
 		setClearColor(gf::Color::White);
 
@@ -29,22 +29,8 @@ namespace gw{
 		m_triggerAction.addMouseButtonControl(gf::MouseButton::Left);
 		addAction(m_triggerAction);
 
-		auto setupButton = [&] (gf::TextButtonWidget& button, auto callback) {
-			button.setDefaultTextColor(gf::Color::Black);
-			button.setDefaultBackgroundColor(gf::Color::Gray(0.7f));
-			button.setSelectedTextColor(gf::Color::Black);
-			button.setSelectedBackgroundColor(gf::Color::Blue);
-			button.setDisabledTextColor(gf::Color::Black);
-			button.setDisabledBackgroundColor(gf::Color::Red);
-			button.setAnchor(gf::Anchor::TopLeft);
-			button.setAlignment(gf::Alignment::Center);
-			button.setCallback(callback);
-			m_widgets.addWidget(button);
-		};
-
-
-		setupButton(m_home, [&] () {
-			m_game.replaceAllScenes(m_game.m_menu);
+		setupButton(m_home, m_widgets, [&] () {
+			m_gameManager.replaceAllScenes(m_gameManager.m_menu);
 		});
 	}
 
@@ -69,7 +55,7 @@ namespace gw{
 	void RulesScene::doProcessEvent(gf::Event& event) {
 		switch (event.type){
 			case gf::EventType::MouseMoved:
-				m_widgets.pointTo(m_game.computeWindowToGameCoordinates(event.mouseCursor.coords, getHudView()));
+				m_widgets.pointTo(m_gameManager.computeWindowToGameCoordinates(event.mouseCursor.coords, getHudView()));
 				break;
 			default :
 				break;
@@ -90,8 +76,6 @@ namespace gw{
 		target.draw(background, states);
 
 		constexpr float characterSize = 0.075f;
-		constexpr float activeCharacterSize = 0.016f;
-		constexpr float activeCharacterSizePieces = 0.025f;
 		constexpr gf::Vector2f backgroundSize(0.36f, 0.2f);
 
 		const float paragraphWidth = coords.getRelativeSize(backgroundSize - 0.05f).x;
