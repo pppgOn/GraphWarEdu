@@ -1,14 +1,90 @@
 #include "../GraphWarEdu.h"
 
 #include "GameScene.h"
+#include <iostream>
 
 namespace gw{
-	GameScene::GameScene(GraphWarEdu& game):
-		gf::Scene(game.getRenderer().getSize()),
-		m_backgroundTexture(game.resources.getTexture("background.jpg")),
-		m_gameManager(game),
+	std::pair<double, double> GameScene::getRenderCoordsOnMap(const double x, const double y, const double mapWitdh, const double mapHeight) {
+		const double lenghtX = m_game->m_map.m_size.maxX - m_game->m_map.m_size.minX;
+		const double lenghtY = m_game->m_map.m_size.minY - m_game->m_map.m_size.minY;
+
+		return {(x - m_game->m_map.m_size.minX)/(mapWitdh/lenghtX), (y - m_game->m_map.m_size.minY)/(mapHeight/lenghtX)};
+	}
+
+	void GameScene::genarateMapTexture() {
+		const double lenghtX = m_game->m_map.m_size.maxX - m_game->m_map.m_size.minX;
+		const double lenghtY = m_game->m_map.m_size.maxY - m_game->m_map.m_size.minY;
+		const int imageWitdh = 1000;
+		const int imageHeight = std::round(imageWitdh *  lenghtY/lenghtX);
+
+		// Create white image
+		gf::Color4u white = {0xFF, 0xFF, 0xFF, 0xFF};
+		gf::Color4u lightGrey = {0xDD, 0xDD, 0xDD, 0xFF};
+		gf::Color4u grey = {0xBB, 0xBA, 0xBA, 0xFF};
+		gf::Color4u black = {0x00, 0x00, 0x00, 0xFF};
+		gf::Image image({imageWitdh, imageHeight}, white);
+
+		// Add rows and columns
+		for (int x = std::round(m_game->m_map.m_size.minX); x < m_game->m_map.m_size.maxX; x++) {
+			const int imageCoordX = (x - m_game->m_map.m_size.minX)*(imageWitdh/lenghtX);
+			if (x == 0) {
+				for (int y = 0; y < imageHeight; y++) {
+					image.setPixel({imageCoordX - 1, y}, black);
+					image.setPixel({imageCoordX, y}, black);
+					image.setPixel({imageCoordX + 1, y}, black);
+				}
+			} else if (x % 5 == 0) {
+				for (int y = 0; y < imageHeight; y++) {
+					image.setPixel({imageCoordX - 1, y}, grey);
+					image.setPixel({imageCoordX, y}, grey);
+					image.setPixel({imageCoordX + 1, y}, grey);
+				}
+			} else {
+				for (int y = 0; y < imageHeight; y++) {
+					image.setPixel({imageCoordX, y}, lightGrey);
+				}
+			}
+		}
+		
+		for (int y = std::round(m_game->m_map.m_size.minY); y < m_game->m_map.m_size.maxY; y++) {
+			int imageCoordY = (y - m_game->m_map.m_size.minY)*(imageHeight/lenghtY);
+			if (y == 0) {
+				for (int x = 0; x < imageWitdh; x++) {
+					for (int i = -1; i < 2; i++) {
+						image.setPixel({x, imageCoordY + i}, black);
+					}
+				}
+			} else if (y % 5 == 0) {
+				for (int x = 0; x < imageWitdh; x++) {
+					for (int i = -1; i < 2; i++) {
+						// Check override of darker colors
+						if (image.getPixel({x, imageCoordY + i}) != black) {
+							image.setPixel({x, imageCoordY + i}, grey);
+						}
+					}
+				}
+			} else {
+				for (int x = 0; x < imageWitdh; x++) {
+					// Check override of darker colors
+					if (image.getPixel({x, imageCoordY}) == white) {
+						image.setPixel({x, imageCoordY}, lightGrey);
+					}
+				}
+			}
+		}
+
+		// Add numbers TODO
+
+		// Save image
+		m_mapTexture.update(image);
+	}
+
+	GameScene::GameScene(GraphWarEdu& gameManager):
+		gf::Scene(gameManager.getRenderer().getSize()),
+		m_backgroundTexture(gameManager.resources.getTexture("background.jpg")),
+		m_gameManager(gameManager),
 		m_trigerAction("trigerAction"),
-		m_home("Go home", game.resources.getFont("RustyHooksRegular.ttf"))
+		m_home("Go home", gameManager.resources.getFont("RustyHooksRegular.ttf"))
 	{
 		setClearColor(gf::Color::Black);
 
@@ -21,17 +97,20 @@ namespace gw{
 		});
 	}
 
+	void GameScene::loadGame(Scenario screnarioName) {
+		m_game = new Game(screnarioName),
+		genarateMapTexture();
+	}
 
 	void GameScene::doHandleActions([[maybe_unused]] gf::Window& window) {
 		if (!isActive()) {
 			return;
 		}
 
-		if(m_trigerAction.isActive()){
+		if (m_trigerAction.isActive()) {
 			m_widgets.triggerAction();
 		}
 	}
-
 
 	void GameScene::doProcessEvent(gf::Event& event) {
 		switch (event.type)
@@ -41,11 +120,12 @@ namespace gw{
 		}
 	}
 
-	void GameScene::doUpdate(gf::Time time){
+	void GameScene::doUpdate(gf::Time time) {
 		
 	}
 
-	void GameScene::doRender(gf::RenderTarget& target, const gf::RenderStates &states){
+	void GameScene::doRender(gf::RenderTarget &target, const gf::RenderStates &states)
+	{
 		gf::Coordinates coords(target);
 
 		float backgroundHeight = coords.getRelativeSize(gf::vec(0.0f, 1.0f)).height;
@@ -84,5 +164,7 @@ namespace gw{
 		m_widgets.addWidget(m_home);
 
 		m_widgets.selectNextWidget();
+
+		loadGame(linear);
 	}
 }
