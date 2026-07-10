@@ -115,6 +115,9 @@ namespace gw{
 	void GameScene::doProcessEvent(gf::Event& event) {
 		switch (event.type)
 		{
+			case gf::EventType::MouseMoved:
+				m_widgets.pointTo(m_gameManager.computeWindowToGameCoordinates(event.mouseCursor.coords, getHudView()));
+				break;
 			default:
 				break;
 		}
