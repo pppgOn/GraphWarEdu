@@ -11,10 +11,9 @@ namespace gw{
 		return {(x - m_game->m_map.m_size.minX)/(mapWitdh/lenghtX), (y - m_game->m_map.m_size.minY)/(mapHeight/lenghtX)};
 	}
 
-	void GameScene::genarateMapTexture() {
+	void GameScene::genarateMapTexture(int imageWitdh) {
 		const double lenghtX = m_game->m_map.m_size.maxX - m_game->m_map.m_size.minX;
 		const double lenghtY = m_game->m_map.m_size.maxY - m_game->m_map.m_size.minY;
-		const int imageWitdh = 1000;
 		const int imageHeight = std::round(imageWitdh *  lenghtY/lenghtX);
 
 		// Create white image
@@ -76,6 +75,7 @@ namespace gw{
 		// Add numbers TODO
 
 		// Save image
+		m_mapTexture.resize({imageWitdh, imageHeight});
 		m_mapTexture.update(image);
 	}
 
@@ -99,7 +99,7 @@ namespace gw{
 
 	void GameScene::loadGame(Scenario screnarioName) {
 		m_game = new Game(screnarioName),
-		genarateMapTexture();
+		genarateMapTexture(1000);
 	}
 
 	void GameScene::doHandleActions([[maybe_unused]] gf::Window& window) {
@@ -138,6 +138,31 @@ namespace gw{
 		target.draw(background, states);
 
 		target.setView(getHudView());
+
+		// Load map texture
+		gf::Sprite map(m_mapTexture);
+
+		// Resize sprite to fit window
+		const gf::v1::Vector2i windowSize = coords.getWindowSize();
+		const gf::v1::Vector2i mapImageSize = m_mapTexture.getSize();
+		float scale = 1;
+		if (mapImageSize.width / mapImageSize.height > windowSize.width / windowSize.height) {
+			scale = (windowSize.width * 0.8) / mapImageSize.width;
+		} else {
+			scale = (windowSize.height * 0.8) / mapImageSize.height;
+		}
+		if (map.getScale().width != scale) {
+			if (scale >= 1.2 || scale <= 0.8) {
+				genarateMapTexture(std::round(mapImageSize.width * scale));
+			}
+
+			map.scale(scale);
+		}
+
+		// Render map
+		map.setPosition(coords.getCenter());
+		map.setAnchor(gf::Anchor::Center);
+		target.draw(map, states);
 
 		//button to go home
 		constexpr float characterSize = 0.02f;

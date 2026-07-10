@@ -20,13 +20,13 @@ namespace gw{
 
 		private:
 			std::pair<double, double> getRenderCoordsOnMap(const double x, const double y, const double mapWitdh, const double mapHeight);
-			void genarateMapTexture();
+			void genarateMapTexture(int width);
 
 			GraphWarEdu& m_gameManager;
 
 			Game* m_game;
 
-			gf::Texture m_mapTexture;
+			gf::Texture m_mapTexture = gf::vec(1000, 1000);
 
 			gf::Action m_trigerAction;
 
