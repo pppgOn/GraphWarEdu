@@ -19,7 +19,8 @@ namespace gw{
 			void doShow() override;
 
 		private:
-			std::pair<double, double> getRenderCoordsOnMap(const double x, const double y, const double mapWitdh, const double mapHeight);
+			float getMapScale(float renderWidth);
+			gf::Vector2f getRenderCoordsOnMap(const std::pair<float, float> position, const float mapWitdh, const float mapHeight, const gf::Vector2f offset);
 			void genarateMapTexture(int width);
 
 			GraphWarEdu& m_gameManager;

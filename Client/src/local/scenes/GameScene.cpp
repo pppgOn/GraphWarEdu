@@ -4,17 +4,16 @@
 #include <iostream>
 
 namespace gw{
-	std::pair<double, double> GameScene::getRenderCoordsOnMap(const double x, const double y, const double mapWitdh, const double mapHeight) {
-		const double lenghtX = m_game->m_map.m_size.maxX - m_game->m_map.m_size.minX;
-		const double lenghtY = m_game->m_map.m_size.minY - m_game->m_map.m_size.minY;
+	float GameScene::getMapScale(float renderWidth) {
+		return renderWidth / m_game->m_map.m_size.width;
+	}
 
-		return {(x - m_game->m_map.m_size.minX)/(mapWitdh/lenghtX), (y - m_game->m_map.m_size.minY)/(mapHeight/lenghtX)};
+	 gf::Vector2f GameScene::getRenderCoordsOnMap(const std::pair<float, float> position, float mapWitdh, float mapHeight, const gf::Vector2f offset) {
+		return {(position.first - m_game->m_map.m_limit.minX)*(mapWitdh/m_game->m_map.m_size.width) + offset.x, (position.second - m_game->m_map.m_limit.minY)*(mapHeight/m_game->m_map.m_size.height) + offset.y};
 	}
 
 	void GameScene::genarateMapTexture(int imageWitdh) {
-		const double lenghtX = m_game->m_map.m_size.maxX - m_game->m_map.m_size.minX;
-		const double lenghtY = m_game->m_map.m_size.maxY - m_game->m_map.m_size.minY;
-		const int imageHeight = std::round(imageWitdh *  lenghtY/lenghtX);
+		const int imageHeight = std::round(imageWitdh *  m_game->m_map.m_size.height/m_game->m_map.m_size.width);
 
 		// Create white image
 		gf::Color4u white = {0xFF, 0xFF, 0xFF, 0xFF};
@@ -24,8 +23,8 @@ namespace gw{
 		gf::Image image({imageWitdh, imageHeight}, white);
 
 		// Add rows and columns
-		for (int x = std::round(m_game->m_map.m_size.minX); x < m_game->m_map.m_size.maxX; x++) {
-			const int imageCoordX = (x - m_game->m_map.m_size.minX)*(imageWitdh/lenghtX);
+		for (int x = std::round(m_game->m_map.m_limit.minX); x < m_game->m_map.m_limit.maxX; x++) {
+			const int imageCoordX = (x - m_game->m_map.m_limit.minX)*(imageWitdh/m_game->m_map.m_size.width);
 			if (x == 0) {
 				for (int y = 0; y < imageHeight; y++) {
 					image.setPixel({imageCoordX - 1, y}, black);
@@ -45,8 +44,8 @@ namespace gw{
 			}
 		}
 		
-		for (int y = std::round(m_game->m_map.m_size.minY); y < m_game->m_map.m_size.maxY; y++) {
-			int imageCoordY = (y - m_game->m_map.m_size.minY)*(imageHeight/lenghtY);
+		for (int y = std::round(m_game->m_map.m_limit.minY); y < m_game->m_map.m_limit.maxY; y++) {
+			int imageCoordY = (y - m_game->m_map.m_limit.minY)*(imageHeight/m_game->m_map.m_size.height);
 			if (y == 0) {
 				for (int x = 0; x < imageWitdh; x++) {
 					for (int i = -1; i < 2; i++) {
@@ -166,6 +165,17 @@ namespace gw{
 		map.setPosition(coords.getCenter());
 		map.setAnchor(gf::Anchor::Center);
 		target.draw(map, states);
+
+		// Render obstacles
+		for (const Entity obstacle : m_game->m_map.m_obstacles) {
+			gf::CircleShape circle;
+			circle.setRadius(obstacle.m_radius * getMapScale(mapImageSize.width));
+			circle.setColor(gf::Color::Black);
+			circle.setPointCount(std::round(circle.getRadius()) + 30);
+			circle.setPosition(getRenderCoordsOnMap(obstacle.m_position, mapImageSize.width, mapImageSize.height, map.getPosition() - map.getOrigin()));
+			circle.setAnchor(gf::Anchor::Center);
+			target.draw(circle, states);
+		}
 
 		//button to go home
 		constexpr float characterSize = 0.02f;

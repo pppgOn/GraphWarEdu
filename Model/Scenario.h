@@ -7,9 +7,9 @@
 
 namespace gw {
 	struct Scenario {
-		MapSize mapSize;
-		std::pair<double,double> player;
-		std::list<std::pair<std::pair<double,double>,double>> obstacles;
+		MapLimit m_mapLimit;
+		std::pair<double,double> m_player;
+		std::list<std::pair<std::pair<double,double>,double>> m_obstacles;
 	};
 
 	extern Scenario linear;

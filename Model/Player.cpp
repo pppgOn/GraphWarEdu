@@ -3,7 +3,7 @@
 namespace gw {
 	Player::Player() {}
 
-	void Player::AddCharater(std::pair<double,double> position) {
+	void Player::AddCharater(std::pair<float,float> position) {
 		m_charachters.push_back(Entity(position, PLAYER_RADIUS));
 	}
 }

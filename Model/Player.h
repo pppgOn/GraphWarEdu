@@ -10,7 +10,7 @@ namespace gw {
 	class Player{
 		public:
 			Player();
-			void AddCharater(std::pair<double,double> position);
+			void AddCharater(std::pair<float,float> position);
 
 			std::list<Entity> m_charachters;
 	};

@@ -8,11 +8,11 @@ namespace gw {
 	}
 
 	Game::Game(Scenario screnario) :
-		m_map(screnario.mapSize)
+		m_map(screnario.m_mapLimit)
 	{
-		for (const std::pair<std::pair<double,double>,double> obstacle : screnario.obstacles) {
+		for (const std::pair<std::pair<double,double>,double> obstacle : screnario.m_obstacles) {
 			m_map.AddObstacle(obstacle.first, obstacle.second);
 		}
-		m_map.AddPlayerOneCharacter(screnario.player);
+		m_map.AddPlayerOneCharacter(screnario.m_player);
 	}
 }

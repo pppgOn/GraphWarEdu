@@ -6,14 +6,14 @@
 namespace gw {
 	class Entity{
 		public:
-			Entity(std::pair<double, double> position, double radius);
-			bool IsHitBy(std::pair<double, double> coords) const;
+			Entity(std::pair<float, float> position, float radius);
+			bool IsHitBy(std::pair<float, float> coords) const;
 
-			std::pair<double, double> m_position;
-			double m_radius;
+			std::pair<float, float> m_position;
+			float m_radius;
 		
 		private:
-			double m_radius_squared;
+			float m_radius_squared;
 	};
 }
 
