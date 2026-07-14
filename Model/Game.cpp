@@ -14,5 +14,9 @@ namespace gw {
 			m_map.AddObstacle(obstacle.first, obstacle.second);
 		}
 		m_map.AddPlayerOneCharacter(screnario.m_player);
+
+		for (const std::pair<double,double> enemy : screnario.m_enemies) {
+			m_map.AddPlayerTwoCharacter(enemy);
+		}
 	}
 }

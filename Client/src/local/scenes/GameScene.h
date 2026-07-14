@@ -22,6 +22,7 @@ namespace gw{
 			float getMapScale(float renderWidth);
 			gf::Vector2f getRenderCoordsOnMap(const std::pair<float, float> position, const float mapWitdh, const float mapHeight, const gf::Vector2f offset);
 			void genarateMapTexture(int width);
+			void renderEntityCircle(gf::RenderTarget &target, const gf::RenderStates &states, const Entity entity, const gf::v1::Vector2i mapImageSize, const gf::Vector2f mapTopLeftCoords, const gf::Color4f color);
 
 			GraphWarEdu& m_gameManager;
 

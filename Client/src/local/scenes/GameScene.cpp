@@ -126,6 +126,16 @@ namespace gw{
 		
 	}
 
+	void GameScene::renderEntityCircle(gf::RenderTarget &target, const gf::RenderStates &states, const Entity entity, const gf::v1::Vector2i mapImageSize, const gf::Vector2f mapTopLeftCoords, const gf::Color4f color) {
+		gf::CircleShape circle;
+		circle.setRadius(entity.m_radius * getMapScale(mapImageSize.width));
+		circle.setColor(color);
+		circle.setPointCount(std::round(circle.getRadius()) + 30);
+		circle.setPosition(getRenderCoordsOnMap(entity.m_position, mapImageSize.width, mapImageSize.height, mapTopLeftCoords));
+		circle.setAnchor(gf::Anchor::Center);
+		target.draw(circle, states);
+	}
+
 	void GameScene::doRender(gf::RenderTarget &target, const gf::RenderStates &states)
 	{
 		gf::Coordinates coords(target);
@@ -153,12 +163,9 @@ namespace gw{
 		} else {
 			scale = (windowSize.height * 0.8) / mapImageSize.height;
 		}
+		
 		if (map.getScale().width != scale) {
-			if (scale >= 1.2 || scale <= 0.8) {
-				genarateMapTexture(std::round(mapImageSize.width * scale));
-			}
-
-			map.scale(scale);
+			genarateMapTexture(std::round(mapImageSize.width * scale));
 		}
 
 		// Render map
@@ -166,15 +173,22 @@ namespace gw{
 		map.setAnchor(gf::Anchor::Center);
 		target.draw(map, states);
 
+		const gf::Vector2f mapTopLeftCoords = map.getPosition() - map.getOrigin();
+
 		// Render obstacles
 		for (const Entity obstacle : m_game->m_map.m_obstacles) {
-			gf::CircleShape circle;
-			circle.setRadius(obstacle.m_radius * getMapScale(mapImageSize.width));
-			circle.setColor(gf::Color::Black);
-			circle.setPointCount(std::round(circle.getRadius()) + 30);
-			circle.setPosition(getRenderCoordsOnMap(obstacle.m_position, mapImageSize.width, mapImageSize.height, map.getPosition() - map.getOrigin()));
-			circle.setAnchor(gf::Anchor::Center);
-			target.draw(circle, states);
+			renderEntityCircle(target, states, obstacle, mapImageSize, mapTopLeftCoords, gf::Color::Black);
+		}
+
+		// Render player
+		for (const Entity charachter : m_game->m_map.m_playerOne.m_charachters) {
+			renderEntityCircle(target, states, charachter, mapImageSize, mapTopLeftCoords, gf::Color::Blue);
+
+		}
+
+		// Render enemies
+		for (const Entity enemy : m_game->m_map.m_playerTwo.m_charachters) {
+			renderEntityCircle(target, states, enemy, mapImageSize, mapTopLeftCoords, gf::Color::Red);
 		}
 
 		//button to go home

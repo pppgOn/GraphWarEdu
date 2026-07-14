@@ -26,7 +26,7 @@ namespace gw {
 		}
 
 		bool Map::AddPlayerTwoCharacter(std::pair<float,float> position) {
-			return AddPlayerCharacter(m_playerOne, position);
+			return AddPlayerCharacter(m_playerTwo, position);
 		}
 
 		void Map::AddObstacle(std::pair<float,float> position, float radius) {

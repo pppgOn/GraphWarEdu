@@ -4,7 +4,7 @@
 #include <list>
 #include "Entity.h"
 
-#define PLAYER_RADIUS 0.5
+#define PLAYER_RADIUS 0.75
 
 namespace gw {
 	class Player{
