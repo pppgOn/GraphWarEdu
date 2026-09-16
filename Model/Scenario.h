@@ -8,9 +8,9 @@
 namespace gw {
 	struct Scenario {
 		MapLimit m_mapLimit;
-		std::pair<double,double> m_player;
-		std::list<std::pair<double,double>> m_enemies;
-		std::list<std::pair<std::pair<double,double>,double>> m_obstacles;
+		std::pair<float,float> m_player;
+		std::list<std::pair<float,float>> m_enemies;
+		std::list<std::pair<std::pair<float,float>,float>> m_obstacles;
 	};
 
 	extern Scenario linear;
