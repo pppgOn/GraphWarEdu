@@ -1,7 +1,8 @@
 #ifndef _GraphWarEdu_
 #define _GraphWarEdu_
 
-
+#include <imgui.h>
+#include <imgui_impl_gf.h>
 #include <gf/GameManager.h>
 #include "scenes/MenuScene.h"
 #include "scenes/RulesScene.h"

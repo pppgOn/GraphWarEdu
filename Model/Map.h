@@ -5,6 +5,8 @@
 #include "Entity.h"
 #include "Player.h"
 
+#define EXPLOSION_RADIUS 1
+
 namespace gw {
 	struct MapLimit {
 		float minX;
@@ -24,6 +26,8 @@ namespace gw {
 			bool AddPlayerOneCharacter(std::pair<float,float> position);
 			bool AddPlayerTwoCharacter(std::pair<float,float> position);
 			void AddObstacle(std::pair<float,float> position, float radius);
+			bool CheckObstaclesHit(std::pair<float,float> position);
+			bool CheckPlayerHit(std::pair<float,float> position, std::pair<float,float> &positionHit, const Character &characterShouting);
 
 			MapLimit m_limit;
 			MapSize m_size;
@@ -33,6 +37,7 @@ namespace gw {
 		
 		private:
 			bool AddPlayerCharacter(Player &player, std::pair<float,float> position);
+			std::list<std::pair<float, float>> m_explosionsDone;
 	};
 }
 

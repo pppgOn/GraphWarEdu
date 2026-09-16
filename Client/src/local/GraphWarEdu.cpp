@@ -6,10 +6,15 @@ namespace gw{
 		m_menu(*this),
 		m_rules(*this),
 		m_game(*this)
-	{
-		pushScene(m_menu);
+	{		
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = nullptr;
+		ImGui_ImplGF_Init(getWindow(), getRenderer());
 
 		// Set frame limit
 		getWindow().setVerticalSyncEnabled(true);
+
+		pushScene(m_menu);
 	}
 }

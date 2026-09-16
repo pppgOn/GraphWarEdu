@@ -2,13 +2,14 @@
 #define _Entity_
 
 #include <utility>
+#include "Function.h"
 
 namespace gw {
 	class Entity{
 		public:
 			Entity(std::pair<float, float> position, float radius);
 			bool IsHitBy(std::pair<float, float> coords) const;
-
+			
 			std::pair<float, float> m_position;
 			float m_radius;
 		

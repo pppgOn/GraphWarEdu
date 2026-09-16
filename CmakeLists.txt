@@ -24,7 +24,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Client/src/config.h.in ${CMAKE_CURREN
 add_executable(${GAME}
 	Client/src/main.cpp
 	Client/src/local/GraphWarEdu.cpp
+	Model/Function.cpp
 	Model/Entity.cpp
+	Model/Charater.cpp
 	Model/Player.cpp
 	Model/Map.cpp
 	Model/Scenario.cpp
@@ -33,11 +35,20 @@ add_executable(${GAME}
 	Client/src/local/scenes/GameScene.cpp
 	Client/src/local/scenes/MenuScene.cpp
 	Client/src/local/scenes/RulesScene.cpp
+
+	gf-imgui/imgui/imgui.cpp
+	gf-imgui/imgui/imgui_draw.cpp
+	gf-imgui/imgui/imgui_widgets.cpp
+	gf-imgui/imgui/imgui_tables.cpp
+
+	gf-imgui/imgui_impl_gf.cc
 )
 
 
 target_include_directories(${GAME}
 	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui/imgui
+		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src/local
 		${CMAKE_CURRENT_BINARY_DIR}/Client

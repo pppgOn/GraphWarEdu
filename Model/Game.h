@@ -4,8 +4,11 @@
 #include <string>
 #include "Map.h"
 #include "Scenario.h"
+#include "Character.h"
 
 namespace gw {
+	enum State { PlayerTurn, FunctionResolution };
+
 	class Game{
 		public:
 			// Random obstacle and players position for duel
@@ -14,7 +17,10 @@ namespace gw {
 			// Scenario
 			Game(Scenario screnarioName);
 
+			Character* getCurrentCharacter();
+
 			Map m_map;
+			State m_state;
 	};
 }
 

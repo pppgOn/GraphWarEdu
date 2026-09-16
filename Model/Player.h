@@ -2,17 +2,16 @@
 #define _Player_
 
 #include <list>
-#include "Entity.h"
-
-#define PLAYER_RADIUS 0.75
+#include <string>
+#include "Character.h"
 
 namespace gw {
 	class Player{
 		public:
 			Player();
-			void AddCharater(std::pair<float,float> position);
+			void AddCharacter(std::pair<float,float> position);
 
-			std::list<Entity> m_charachters;
+			std::list<Character> m_charachters;
 	};
 }
 

@@ -9,6 +9,7 @@ then `git clone git@github.com:pppgOn/GraphWarEdu.git`
 ## Build
 
 ```shell
+git submodule update --init --recursive
 mkdir build
 cd build
 cmake ..
