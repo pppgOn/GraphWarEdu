@@ -19,6 +19,15 @@ namespace gw {
 		FunctionNode(NodeType type, float value) : m_type(type), m_value(value), m_leftParam(nullptr), m_rightParam(nullptr) {};
 		FunctionNode(NodeType type, FunctionNode *leftParam) : m_type(type), m_value(0), m_leftParam(leftParam), m_rightParam(nullptr) {};
 		FunctionNode(NodeType type, FunctionNode *leftParam, FunctionNode *rightParam) : m_type(type), m_value(0), m_leftParam(leftParam), m_rightParam(rightParam) {};
+		~FunctionNode() {
+			if (m_leftParam != nullptr) {
+				delete m_leftParam;
+			}
+
+			if (m_rightParam != nullptr) {
+				delete m_rightParam;
+			}
+		};
 		NodeType m_type;
 		float m_value;
 		FunctionNode *m_leftParam;
@@ -29,7 +38,6 @@ namespace gw {
 	class Function{
 		public:
 			Function(std::string function);
-			~Function();
 			FunctionNode* transformFunctionTree(std::stack<FunctionNode> &stack);
 			float evaluate(float x) const;
 			std::string toString() const;

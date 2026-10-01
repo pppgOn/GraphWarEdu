@@ -229,10 +229,6 @@ namespace gw {
 		}
 	}
 
-	Function::~Function() {
-		// TODO: free nodes
-	}
-
 	void Function::parseOperator(NodeType type, std::stack<FunctionNode> &operatorStack, std::stack<FunctionNode> &outputStack) {
 		while (!operatorStack.empty()) {
 			if (operatorStack.top().m_type == NodeType::LeftParenthesis) {
