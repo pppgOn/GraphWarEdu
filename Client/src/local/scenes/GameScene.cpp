@@ -232,14 +232,19 @@ namespace gw{
 
 		m_mapTopLeftCoords = map.getPosition() - map.getOrigin();
 
-		// Render function
-		// if (m_game->m_state == FunctionResolution) { // TODO : UNCOMMENT
-			target.draw(m_functionRenderPoints, states);
-		// }
-
 		// Render obstacles
 		for (const Entity obstacle : m_game->m_map.m_obstacles) {
 			renderEntityCircle(target, states, obstacle, gf::Color::Black);
+		}
+
+		//Render Explosions
+		for (const Entity explosionDone : m_game->m_map.m_explosionsDone) {
+			renderEntityCircle(target, states, explosionDone, gf::Color::White);
+		}
+
+		// Render function
+		if (m_game->m_state == FunctionResolution) {
+			target.draw(m_functionRenderPoints, states);
 		}
 
 		// Render player

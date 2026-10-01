@@ -34,9 +34,15 @@ namespace gw {
 	}
 
 	bool Map::CheckObstaclesHit(std::pair<float,float> position) {
+		for (const Entity explosionDone : m_explosionsDone) {
+			if (explosionDone.IsHitBy(position)) {
+				return false;
+			}
+		}
+
 		for (const Entity obstacle : m_obstacles) {
 			if (obstacle.IsHitBy(position)) {
-				m_explosionsDone.push_back(position);
+				m_explosionsDone.push_back(Entity(position, EXPLOSION_RADIUS));
 				return true;
 			}
 		}

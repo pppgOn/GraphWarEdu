@@ -34,10 +34,10 @@ namespace gw {
 			Player m_playerOne;
 			Player m_playerTwo;
 			std::list<Entity> m_obstacles;
-		
+			std::list<Entity> m_explosionsDone;
+
 		private:
 			bool AddPlayerCharacter(Player &player, std::pair<float,float> position);
-			std::list<std::pair<float, float>> m_explosionsDone;
 	};
 }
 
