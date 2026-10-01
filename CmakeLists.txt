@@ -31,7 +31,6 @@ add_executable(${GAME}
 	Model/Map.cpp
 	Model/Scenario.cpp
 	Model/Game.cpp
-	Client/src/local/Buttons.cpp
 	Client/src/local/scenes/GameScene.cpp
 	Client/src/local/scenes/MenuScene.cpp
 	Client/src/local/scenes/RulesScene.cpp
@@ -42,6 +41,8 @@ add_executable(${GAME}
 	gf-imgui/imgui/imgui_tables.cpp
 
 	gf-imgui/imgui_impl_gf.cc
+
+	Commons/buttons.cpp
 )
 
 
@@ -49,6 +50,7 @@ target_include_directories(${GAME}
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui/imgui
 		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui
+		${CMAKE_CURRENT_SOURCE_DIR}/Commons
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src/local
 		${CMAKE_CURRENT_BINARY_DIR}/Client

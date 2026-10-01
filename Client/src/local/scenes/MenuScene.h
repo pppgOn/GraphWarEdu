@@ -10,7 +10,7 @@
 #include <gf/Action.h>
 #include <gf/Coordinates.h>
 #include <gf/Sprite.h>
-#include "../Buttons.h"
+#include "Buttons.h"
 
 namespace gw{
 	struct GraphWarEdu;

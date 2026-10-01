@@ -5,7 +5,7 @@
 #include <gf/ResourceManager.h>
 #include <gf/Scene.h>
 #include <gf/Rect.h>
-#include "../Buttons.h"
+#include "Buttons.h"
 
 namespace gw{
 	struct GraphWarEdu;

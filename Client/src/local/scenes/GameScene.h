@@ -8,7 +8,7 @@
 
 #include <gf/Particles.h>
 #include "../../../../Model/Game.h"
-#include "../Buttons.h"
+#include "Buttons.h"
 
 constexpr gf::Color4u white = {0xFF, 0xFF, 0xFF, 0xFF};
 constexpr gf::Color4u lightGrey = {0xDD, 0xDD, 0xDD, 0xFF};
