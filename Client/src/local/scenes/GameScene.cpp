@@ -81,7 +81,10 @@ namespace gw{
 		m_trigerAction("trigerAction"),
 		m_home("Leave", gameManager.resources.getFont("RustyHooksRegular.ttf")),
 		m_mapImageSize(1000, 1000),
-		m_mapTopLeftCoords(0, 0)
+		m_mapTopLeftCoords(0, 0),
+		m_functionRenderPoints(gf::PrimitiveType::LineStrip, 0),
+		m_lastFunctionUnknownValue(0),
+		m_lastFunctionEvaluation(0)
 	{
 		setClearColor(gf::Color::Black);
 		std::strncpy(m_functionTyped.data(),"", 1023);
@@ -124,10 +127,24 @@ namespace gw{
 
 	void GameScene::doUpdate(gf::Time time) {
 		ImGui_ImplGF_Update(time);
+		const std::time_t startingTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		if (m_game->m_state == FunctionResolution) {
 			const Character currentCharacter = *m_game->getCurrentCharacter();
-			const float x = m_functionResolutionTime * FUNCTION_RESOLUTION_TIME_FACTOR + currentCharacter.m_position.first;
-			const float y = currentCharacter.evaluateFonction(x) - currentCharacter.m_position.second;
+			float deltaX = time.asSeconds() * FUNCTION_RESOLUTION_TIME_FACTOR;
+			float x = m_lastFunctionUnknownValue + deltaX;
+			float y = currentCharacter.evaluateFonction(x) - currentCharacter.m_position.second;
+
+			float reductionFactor = 0.5;
+			while (std::abs(y - m_lastFunctionEvaluation) > 0.1) {
+				x = m_lastFunctionUnknownValue + deltaX * reductionFactor;
+				y = currentCharacter.evaluateFonction(x) - currentCharacter.m_position.second;
+				reductionFactor *= reductionFactor;
+				// Prevent to long function
+				if (m_functionResolutionTime > 15 || ((std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - startingTime) > 3)) {
+					endFunctionResolution();
+					break;
+				}
+			}
 
 			if (x > m_game->m_map.m_limit.maxX || y > m_game->m_map.m_limit.maxY || y < m_game->m_map.m_limit.minY) {
 				// Map limit reached, stop the function resolution
@@ -143,10 +160,16 @@ namespace gw{
 						// TODO : character explosion animation on the characterPositionHit
 					}
 
-					m_functionRenderPoints.addPoint(getRenderCoordsOnMap({x, y}), black);
+					const size_t vertexArraySize = m_functionRenderPoints.getVertexCount();
+					m_functionRenderPoints.resize(vertexArraySize + 1);
+					m_functionRenderPoints[vertexArraySize].position = getRenderCoordsOnMap({x, y});
+					m_functionRenderPoints[vertexArraySize].color = black;
 					m_functionResolutionTime += time.asSeconds();
 				}
 			}
+
+			m_lastFunctionEvaluation = y;
+			m_lastFunctionUnknownValue = x;
 		}
 	}
 
@@ -155,7 +178,9 @@ namespace gw{
 		// Setup function for the new charater playing
 		std::strncpy(m_functionTyped.data(), m_game->getCurrentCharacter()->getCurrentFunction().data(), 1023);
 		// Clear rendered points
-		// m_functionRenderPoints = gf::PointParticles(); // TODO: UNCOMMENT
+		m_functionRenderPoints = gf::VertexArray(gf::PrimitiveType::LineStrip, 0);
+		m_lastFunctionEvaluation = 0;
+		m_lastFunctionUnknownValue = 0;
 	}
 
 	void GameScene::renderEntityCircle(gf::RenderTarget &target, const gf::RenderStates &states, const Entity entity, const gf::Color4f color) {
@@ -269,10 +294,13 @@ namespace gw{
 			ImGui::Indent();
 
 			if (ImGui::Button("Send", ImVec2(remainingPanelXSpace * 0.8, coords.getRelativeSize({0.f, 0.03f}).y))) {
-				m_game->getCurrentCharacter()->setCurrentFunction(m_functionTyped.data()); // TODO: trim
+				Character* currentCharacter = m_game->getCurrentCharacter();
+				currentCharacter->setCurrentFunction(m_functionTyped.data()); // TODO: trim
 				m_game->m_state = FunctionResolution;
 				m_functionResolutionTime = 0;
-				m_functionRenderPoints = gf::PointParticles(); // TODO: REMOVE
+				m_functionRenderPoints = gf::VertexArray(gf::PrimitiveType::LineStrip, 0);
+				m_lastFunctionUnknownValue = currentCharacter->m_position.first;
+				m_lastFunctionEvaluation = currentCharacter->m_position.second;
 			}
 		}
 		ImGui::End();

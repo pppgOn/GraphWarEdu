@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui_impl_gf.h>
 #include <cstring>
+#include <chrono>
 
 #include <gf/Particles.h>
 #include "../../../../Model/Game.h"
@@ -42,8 +43,10 @@ namespace gw{
 
 			// Time, in seconds from the start of function rendering
 			float m_functionResolutionTime;
+			float m_lastFunctionEvaluation;
+			float m_lastFunctionUnknownValue;
 
-			gf::PointParticles m_functionRenderPoints;
+			gf::VertexArray m_functionRenderPoints;
 
 			gf::Texture m_mapTexture = gf::vec(1000, 1000);
 			gf::v1::Vector2i m_mapImageSize;

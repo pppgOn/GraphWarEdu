@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 // Factor from seconds to function advancement (example: 2 means advance by 2 on the graph each seconds) 
-#define FUNCTION_RESOLUTION_TIME_FACTOR 3
+#define FUNCTION_RESOLUTION_TIME_FACTOR 10
 
 namespace gw {
 	enum NodeType { Number, Unknown, Multiply, Divide, Add, Substract, AbsoluteValue, Explonential, Logarithm, SquaredRoot, Modulo, Power, Max, Min, Sinus, Cosinus, LeftParenthesis, RightParenthesis };
@@ -37,6 +37,7 @@ namespace gw {
 		private:
 			static size_t getOperatorPrecedence(NodeType type);
 			static void parseOperator(NodeType type, std::stack<FunctionNode> &operatorStack, std::stack<FunctionNode> &outputStack);
+			static void assertNextOperatorIsLeftParenthesis(std::string::iterator charIterator);
 			float evaluate(const FunctionNode* node, float x) const;
 
 			std::string m_functionString;

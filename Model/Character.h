@@ -19,6 +19,7 @@ namespace gw {
 			bool operator == (const Character& character) const { return m_position == character.m_position; }
 		private:
 			Function m_currentFunction;
+			float m_delta;
 	};
 }
 

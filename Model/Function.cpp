@@ -23,76 +23,105 @@ namespace gw {
 		// Implementation of Shunting yard algorithm
 		std::stack<FunctionNode> operatorStack;
 		std::stack<FunctionNode> outputStack;
+		bool nextMinusIsNumber = true;
 		for (auto charIterator = functionStringReduced.begin(); charIterator != functionStringReduced.end(); ++charIterator) {
 			switch (*charIterator) {
 				case ' ':
-				case ',':
-					// Ignore, for two operande function (Max and Min)
 					break;
 
 				// Functions
 				case 'a':
 					operatorStack.push(NodeType::AbsoluteValue);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 				
 				case 'e':
 					operatorStack.push(NodeType::Explonential);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 				
 				case 'l':
 					operatorStack.push(NodeType::Logarithm);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 				
 				case 'q':
 					operatorStack.push(NodeType::SquaredRoot);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 
 				case 'c':
 					operatorStack.push(NodeType::Cosinus);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 
 				case 's':
 					operatorStack.push(NodeType::Sinus);
+					assertNextOperatorIsLeftParenthesis(charIterator);
 					break;
 
 				case 'n':
 					operatorStack.push(NodeType::Min);
+					assertNextOperatorIsLeftParenthesis(charIterator);
+					operatorStack.push(NodeType::LeftParenthesis); // To ensure pre-comma expression is grouped
 					break;
 
 				case 'm':
 					operatorStack.push(NodeType::Max);
+					assertNextOperatorIsLeftParenthesis(charIterator);
+					operatorStack.push(NodeType::LeftParenthesis); // To ensure pre-comma expression is grouped
 					break;
 
 				// Operators
 				case '+':
 					parseOperator(NodeType::Add, operatorStack, outputStack);
+					nextMinusIsNumber = true;
 					break;
 
 				case '-':
-					parseOperator(NodeType::Substract, operatorStack, outputStack);
+					while (*(charIterator+1) == ' ') {
+						charIterator++;
+					}
+
+					if (nextMinusIsNumber) {
+						// Do "*-1"
+						outputStack.push(FunctionNode(NodeType::Number, -1));
+						parseOperator(NodeType::Multiply, operatorStack, outputStack);
+					} else {
+						// Do the two params substraction
+						parseOperator(NodeType::Substract, operatorStack, outputStack);
+					}
+					nextMinusIsNumber = true;
 					break;
 
 				case '*':
 					parseOperator(NodeType::Multiply, operatorStack, outputStack);
+					nextMinusIsNumber = true;
 					break;
 
 				case '/':
 					parseOperator(NodeType::Divide, operatorStack, outputStack);
+					nextMinusIsNumber = true;
 					break;
 
 				case '%':
 					parseOperator(NodeType::Modulo, operatorStack, outputStack);
+					nextMinusIsNumber = true;
 					break;
 
 				case '^':
 					parseOperator(NodeType::Power, operatorStack, outputStack);
+					nextMinusIsNumber = true;
 					break;
 
 				// Parentheses
 				case '(':
 					operatorStack.push(NodeType::LeftParenthesis);
+					nextMinusIsNumber = true;
 					break;
-				
+
+				case ',':
+					// Handled as a right parenthesis to close min and max function left parenthesis
 				case ')':
 					while (!operatorStack.empty() && operatorStack.top().m_type != NodeType::LeftParenthesis) {
 						outputStack.push(operatorStack.top());
@@ -111,12 +140,13 @@ namespace gw {
 							break;
 						}
 					}
+					nextMinusIsNumber = false;
 
 					break;
 				
 				// Number or the unknown
-				case 'X':
 				case 'x':
+					nextMinusIsNumber = false;
 					outputStack.push(FunctionNode(NodeType::Unknown));
 					break;
 
@@ -135,6 +165,7 @@ namespace gw {
 						
 						charIterator++;
 					}
+					nextMinusIsNumber = false;
 					charIterator--;
 
 					outputStack.push(FunctionNode(NodeType::Number, currentNumberValue));
@@ -223,6 +254,16 @@ namespace gw {
 		operatorStack.push(type);
 	}
 
+	void Function::assertNextOperatorIsLeftParenthesis(std::string::iterator charIterator) {
+		while (*(charIterator+1) == ' ') {
+			charIterator++;
+		}
+
+		if (*(charIterator+1) != '(') {
+			throw std::invalid_argument("Missing opening parenthesis after an operator");
+		}
+	}
+
 	size_t Function::getOperatorPrecedence(NodeType type) {
 		switch (type) {
 			case NodeType::Power:
@@ -235,7 +276,8 @@ namespace gw {
 			case NodeType::Substract:
 				return 1;
 			default:
-				throw std::invalid_argument("Invalid operator found");
+				// Sin, Cos, Abs, Sqrt, ...
+				return 4;
 		}
 	}
 
