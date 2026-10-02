@@ -4,76 +4,6 @@
 #include <iostream>
 
 namespace gw{
-	float GameScene::getMapScale(float renderWidth) {
-		return renderWidth / m_game->m_map.m_size.width;
-	}
-
-	 gf::Vector2f GameScene::getRenderCoordsOnMap(const std::pair<float, float> position) {
-		return {(position.first - m_game->m_map.m_limit.minX)*(m_mapImageSize.width/m_game->m_map.m_size.width) + m_mapTopLeftCoords.x, (-position.second - m_game->m_map.m_limit.minY)*(m_mapImageSize.height/m_game->m_map.m_size.height) + m_mapTopLeftCoords.y};
-	}
-
-	void GameScene::genarateMapTexture(int imageWitdh) {
-		const int imageHeight = std::round(imageWitdh * m_game->m_map.m_size.height/m_game->m_map.m_size.width);
-
-		// Create white image
-		gf::Image image({imageWitdh, imageHeight}, white);
-
-		// Add rows and columns
-		for (int x = std::round(m_game->m_map.m_limit.minX); x < m_game->m_map.m_limit.maxX; x++) {
-			const int imageCoordX = (x - m_game->m_map.m_limit.minX)*(imageWitdh/m_game->m_map.m_size.width);
-			if (x == 0) {
-				for (int y = 0; y < imageHeight; y++) {
-					image.setPixel({imageCoordX - 1, y}, black);
-					image.setPixel({imageCoordX, y}, black);
-					image.setPixel({imageCoordX + 1, y}, black);
-				}
-			} else if (x % 5 == 0) {
-				for (int y = 0; y < imageHeight; y++) {
-					image.setPixel({imageCoordX - 1, y}, grey);
-					image.setPixel({imageCoordX, y}, grey);
-					image.setPixel({imageCoordX + 1, y}, grey);
-				}
-			} else {
-				for (int y = 0; y < imageHeight; y++) {
-					image.setPixel({imageCoordX, y}, lightGrey);
-				}
-			}
-		}
-		
-		for (int y = std::round(m_game->m_map.m_limit.minY); y < m_game->m_map.m_limit.maxY; y++) {
-			int imageCoordY = (y - m_game->m_map.m_limit.minY)*(imageHeight/m_game->m_map.m_size.height);
-			if (y == 0) {
-				for (int x = 0; x < imageWitdh; x++) {
-					for (int i = -1; i < 2; i++) {
-						image.setPixel({x, imageCoordY + i}, black);
-					}
-				}
-			} else if (y % 5 == 0) {
-				for (int x = 0; x < imageWitdh; x++) {
-					for (int i = -1; i < 2; i++) {
-						// Check override of darker colors
-						if (image.getPixel({x, imageCoordY + i}) != black) {
-							image.setPixel({x, imageCoordY + i}, grey);
-						}
-					}
-				}
-			} else {
-				for (int x = 0; x < imageWitdh; x++) {
-					// Check override of darker colors
-					if (image.getPixel({x, imageCoordY}) == white) {
-						image.setPixel({x, imageCoordY}, lightGrey);
-					}
-				}
-			}
-		}
-
-		// Add numbers TODO
-
-		// Save image
-		m_mapTexture.resize({imageWitdh, imageHeight});
-		m_mapTexture.update(image);
-	}
-
 	GameScene::GameScene(GraphWarEdu& gameManager):
 		gf::Scene(gameManager.getRenderer().getSize()),
 		m_backgroundTexture(gameManager.resources.getTexture("background.jpg")),
@@ -100,7 +30,7 @@ namespace gw{
 
 	void GameScene::loadGame(Scenario screnarioName) {
 		m_game = new Game(screnarioName),
-		genarateMapTexture(1000);
+		genarateMapTexture(1000, m_game, m_mapTexture);
 	}
 
 	void GameScene::doHandleActions([[maybe_unused]] gf::Window& window) {
@@ -162,7 +92,7 @@ namespace gw{
 
 					const size_t vertexArraySize = m_functionRenderPoints.getVertexCount();
 					m_functionRenderPoints.resize(vertexArraySize + 1);
-					m_functionRenderPoints[vertexArraySize].position = getRenderCoordsOnMap({x, y});
+					m_functionRenderPoints[vertexArraySize].position = getRenderCoordsOnMap({x, y}, m_game, m_mapImageSize, m_mapTopLeftCoords);
 					m_functionRenderPoints[vertexArraySize].color = black;
 					m_functionResolutionTime += time.asSeconds();
 				}
@@ -181,16 +111,6 @@ namespace gw{
 		m_functionRenderPoints = gf::VertexArray(gf::PrimitiveType::LineStrip, 0);
 		m_lastFunctionEvaluation = 0;
 		m_lastFunctionUnknownValue = 0;
-	}
-
-	void GameScene::renderEntityCircle(gf::RenderTarget &target, const gf::RenderStates &states, const Entity entity, const gf::Color4f color) {
-		gf::CircleShape circle;
-		circle.setRadius(entity.m_radius * getMapScale(m_mapImageSize.width));
-		circle.setColor(color);
-		circle.setPointCount(std::round(circle.getRadius()) + 30);
-		circle.setPosition(getRenderCoordsOnMap(entity.m_position));
-		circle.setAnchor(gf::Anchor::Center);
-		target.draw(circle, states);
 	}
 
 	void GameScene::doRender(gf::RenderTarget &target, const gf::RenderStates &states)
@@ -222,7 +142,7 @@ namespace gw{
 		}
 		
 		if (abs(map.getScale().width - scale) > 0.001) {
-			genarateMapTexture(std::round(m_mapImageSize.width * scale));
+			genarateMapTexture(std::round(m_mapImageSize.width * scale), m_game, m_mapTexture);
 		}
 
 		// Render map
@@ -234,12 +154,12 @@ namespace gw{
 
 		// Render obstacles
 		for (const Entity obstacle : m_game->m_map.m_obstacles) {
-			renderEntityCircle(target, states, obstacle, gf::Color::Black);
+			renderEntityCircle(target, states, obstacle, gf::Color::Black, m_mapImageSize, m_game, m_mapTopLeftCoords);
 		}
 
 		//Render Explosions
 		for (const Entity explosionDone : m_game->m_map.m_explosionsDone) {
-			renderEntityCircle(target, states, explosionDone, gf::Color::White);
+			renderEntityCircle(target, states, explosionDone, gf::Color::White, m_mapImageSize, m_game, m_mapTopLeftCoords);
 		}
 
 		// Render function
@@ -249,12 +169,12 @@ namespace gw{
 
 		// Render player
 		for (const Entity charachter : m_game->m_map.m_playerOne.m_charachters) {
-			renderEntityCircle(target, states, charachter, gf::Color::Blue);
+			renderEntityCircle(target, states, charachter, gf::Color::Blue, m_mapImageSize, m_game, m_mapTopLeftCoords);
 		}
 
 		// Render enemies
 		for (const Entity enemy : m_game->m_map.m_playerTwo.m_charachters) {
-			renderEntityCircle(target, states, enemy, gf::Color::Red);
+			renderEntityCircle(target, states, enemy, gf::Color::Red, m_mapImageSize, m_game, m_mapTopLeftCoords);
 		}
 
 		const gf::Vector2f mapTopRightCoords = m_mapTopLeftCoords + gf::Vector2f((float)m_mapImageSize.width, 0);

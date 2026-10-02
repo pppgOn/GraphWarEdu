@@ -43,6 +43,7 @@ add_executable(${GAME}
 	gf-imgui/imgui_impl_gf.cc
 
 	Commons/buttons.cpp
+	Commons/gameWindow.cpp
 )
 
 
@@ -50,6 +51,7 @@ target_include_directories(${GAME}
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui/imgui
 		${CMAKE_CURRENT_SOURCE_DIR}/gf-imgui
+		${CMAKE_CURRENT_SOURCE_DIR}/Model
 		${CMAKE_CURRENT_SOURCE_DIR}/Commons
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src
 		${CMAKE_CURRENT_SOURCE_DIR}/Client/src/local

@@ -7,13 +7,9 @@
 #include <chrono>
 
 #include <gf/Particles.h>
-#include "../../../../Model/Game.h"
+#include "Game.h"
 #include "Buttons.h"
-
-constexpr gf::Color4u white = {0xFF, 0xFF, 0xFF, 0xFF};
-constexpr gf::Color4u lightGrey = {0xDD, 0xDD, 0xDD, 0xFF};
-constexpr gf::Color4u grey = {0xBB, 0xBA, 0xBA, 0xFF};
-constexpr gf::Color4u black = {0x00, 0x00, 0x00, 0xFF};
+#include "GameWindow.h"
 
 namespace gw{
 	struct GraphWarEdu;
@@ -31,9 +27,6 @@ namespace gw{
 
 		private:
 			float getMapScale(float renderWidth);
-			gf::Vector2f getRenderCoordsOnMap(const std::pair<float, float> position);
-			void genarateMapTexture(int width);
-			void renderEntityCircle(gf::RenderTarget &target, const gf::RenderStates &states, const Entity entity, const gf::Color4f color);
 			void endFunctionResolution();
 			GraphWarEdu& m_gameManager;
 
